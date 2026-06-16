@@ -84,7 +84,7 @@ var CFG = {
   posOrd:['开心','幸福','愉悦','振奋','欣慰','快乐','欢喜','满足','自豪','感激','温暖','感动','平静','放松','舒适','美好','甜蜜','希望','从容','喜悦'],
   negOrd:['难过','悲伤','愤怒','失落','压抑','痛苦','忧郁','沮丧','绝望','恐惧','烦躁','厌倦','孤独','空虚','迷茫','沉重','自卑','羞耻','憎恨','愁闷'],
   pracWds:['桌子','椅子','书本','窗户','电脑','水杯','街道','树木','汽车','电话','手表','台灯'],
-  getCat:function(){return[{label:'积极网络流行情绪词',words:this.posNet},{label:'消极网络流行情绪词',words:this.negNet},{label:'积极普通情绪词',words:this.negOrd},{label:'消极普通情绪词',words:this.negOrd}]},
+  getCat:function(){return[{label:'积极网络流行情绪词',words:this.posNet},{label:'消极网络流行情绪词',words:this.negNet},{label:'积极普通情绪词',words:this.posOrd},{label:'消极普通情绪词',words:this.negOrd}]},
   getColors:function(){var a=[];for(var k in this.colors)a.push(k);return a}
 };
 
@@ -391,8 +391,9 @@ var SM = {
     for(var i=a.length-1;i>0;i--){var j=Math.floor(this._rand()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
     return a;
   },
-  _assignColors: function(arr){
-    var cols = CFG.getColors();
+  _assignColorsToGroup: function(arr){
+    // 对一组词汇分配均衡颜色（20词→红7蓝7绿6 或 12词→红4蓝4绿4）
+    var cols = CFG.getColors(); // ['red','blue','green']
     var pool=[];
     var base=Math.floor(arr.length/cols.length), rem=arr.length%cols.length;
     for(var i=0;i<cols.length;i++){var cnt=base+(i<rem?1:0);for(var j=0;j<cnt;j++)pool.push(cols[i]);}
@@ -402,13 +403,23 @@ var SM = {
   initialize: function(){
     console.log('[SM] 初始化');
     this.formal=[]; this.prac=[];
+
+    // 按类别生成词汇，每类单独分配颜色（组内均衡）
     var cats=CFG.getCat();
-    for(var c=0;c<cats.length;c++) for(var w=0;w<cats[c].words.length;w++)
-      this.formal.push({word:cats[c].words[w],cat:cats[c].label,chars:cats[c].words[w].length,col:null});
+    for(var c=0;c<cats.length;c++){
+      var group=[];
+      for(var w=0;w<cats[c].words.length;w++)
+        group.push({word:cats[c].words[w],cat:cats[c].label,chars:cats[c].words[w].length,col:null});
+      this._assignColorsToGroup(group);
+      // 将本组加入正式列表
+      for(var i=0;i<group.length;i++) this.formal.push(group[i]);
+    }
+
     for(var i=0;i<CFG.pracWds.length;i++)
       this.prac.push({word:CFG.pracWds[i],cat:'练习(中性词)',chars:CFG.pracWds[i].length,col:null});
-    this._assignColors(this.formal);
-    this._assignColors(this.prac);
+    this._assignColorsToGroup(this.prac);
+
+    // 打乱整体顺序
     this.formal = this._shuffle(this.formal);
     this.prac = this._shuffle(this.prac);
     console.log('[SM] 正式:'+this.formal.length+' 练习:'+this.prac.length);
