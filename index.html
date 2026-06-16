@@ -144,7 +144,12 @@ function Experiment(){
     e=byId('prog');if(e)e.style.display='none';
     e=byId('timeout-tip');if(e)e.style.display='none';
   }
-  function showStim(){byId('stimulus-display').style.display='flex'}
+  function showStim(){
+  byId('stimulus-display').style.display='flex';
+  // 隐藏所有content-area（避免遮盖刺激）
+  var cas=document.querySelectorAll('#content-area');
+  for(var i=0;i<cas.length;i++)cas[i].style.display='none';
+}
   function stimOff(){byId('stimulus-display').style.display='none'}
 
   // ===== 计时 =====
@@ -254,7 +259,11 @@ function Experiment(){
   // ===== 指导语 =====
   self._showInst = function(title,html,btnText,cb,showBtn){
     if(showBtn===undefined)showBtn=true;
-    ct();self.phase=null;stimOff();
+    ct();self.phase=null;
+    // 移除旧的content-area（避免堆积）
+    var old=document.querySelectorAll('#content-area');
+    for(var i=0;i<old.length;i++)old[i].parentNode.removeChild(old[i]);
+    stimOff();
     var ca=document.createElement('div');ca.id='content-area';
     ca.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff';
     self.container.appendChild(ca);
@@ -348,7 +357,27 @@ var SM={
     for(var k in map)console.log('  '+k+': 红='+map[k].red+' 蓝='+map[k].blue+' 绿='+map[k].green+' (共'+map[k].t+')');
   },
   getFormal:function(){return this.formal.slice()},
-  getPrac:function(){return this.prac.slice()}
+  getPrac:function(){return this.prac.slice()},
+  // 材料库表格文本（输出到控制台供主试验证）
+  matTable:function(){
+    var t='\n===== 实验材料库 =====\n';
+    var cats=CFG.getCat();
+    var map={};for(var i=0;i<this.formal.length;i++){var s=this.formal[i];if(!map[s.cat])map[s.cat]={red:0,blue:0,green:0};map[s.cat][s.col]++}
+    for(var ci=0;ci<cats.length;ci++){
+      t+='\n【'+cats[ci].label+'】\n';
+      var group=[];
+      for(var w=0;w<cats[ci].words.length;w++){
+        var col='';
+        for(var i=0;i<this.formal.length;i++)
+          if(this.formal[i].word===cats[ci].words[w]&&this.formal[i].cat===cats[ci].label){col=this.formal[i].col;break}
+        group.push(cats[ci].words[w]+'('+(col?CFG.colors[col].name:'?')+')');
+      }
+      t+='  '+group.join('、')+'\n';
+      t+='  颜色分布: 红'+map[cats[ci].label].red+' 蓝'+map[cats[ci].label].blue+' 绿'+map[cats[ci].label].green+'\n';
+    }
+    t+='\n======================\n';
+    return t;
+  }
 };
 
 // ==================== 启动 ====================
@@ -356,7 +385,10 @@ document.addEventListener('DOMContentLoaded',function(){
   try{
     console.log('[启动] 初始化...');
     SM.initialize();
-    buildLibPage();
+    // 材料库输出到控制台（主试验证用，不给被试看）
+    console.log(SM.matTable());
+    // 直接进入实验（跳过材料库页面）
+    startExp();
   }catch(e){console.error(e);showErr(e.message,e.stack)}
 });
 
