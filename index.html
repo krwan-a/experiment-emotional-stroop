@@ -8,451 +8,437 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;font-family:"Microsoft YaHei","微软雅黑","PingFang SC",sans-serif;background:#fff;color:#222;user-select:none;-webkit-user-select:none}
 #container{position:relative;width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;background:#fff}
-#content-area{position:relative;width:100%;height:100%;display:flex;justify-content:center;align-items:center}
-#stimulus-display{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff}
+#stimulus-display{position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;background:#fff}
 .stimulus-text{font-weight:bold;text-align:center;line-height:1.2}
 #fixation{font-size:64px;color:#000}
 #word-display{font-size:72px;font-weight:bold}
-#progress-indicator{position:absolute;bottom:30px;right:40px;font-size:16px;color:#b0b0b0;font-family:"Courier New",monospace}
-#timeout-indicator{position:absolute;bottom:30%;font-size:24px;color:#999}
-.inst-panel{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;padding:40px 60px}
-.inst-title{font-size:32px;font-weight:bold;color:#1a5276;margin-bottom:25px}
-.inst-text{font-size:22px;line-height:1.9;text-align:center;max-width:800px;margin-bottom:20px}
-.key-hint{font-size:26px;line-height:2.2;text-align:center;margin:15px 0}
-.key-badge{display:inline-block;background:#e8e8e8;padding:4px 18px;border-radius:6px;font-weight:bold;font-size:28px;margin:0 6px;border:1px solid #ccc}
-.color-red{color:#FF0000;font-weight:bold}
-.color-blue{color:#0000FF;font-weight:bold}
-.color-green{color:#00B000;font-weight:bold}
-.btn{padding:14px 40px;margin-top:30px;font-size:22px;font-family:inherit;background:#4682B4;color:#fff;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#prog{position:absolute;bottom:30px;right:40px;font-size:16px;color:#b0b0b0;font-family:"Courier New",monospace}
+#timeout-tip{position:absolute;bottom:30%;font-size:24px;color:#999}
+.inst-panel{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff;padding:40px 60px;overflow-y:auto}
+.inst-title{font-size:30px;font-weight:bold;color:#1a5276;margin-bottom:20px}
+.inst-text{font-size:20px;line-height:1.8;text-align:center;max-width:800px;margin-bottom:15px}
+.key-hint{font-size:24px;line-height:2;text-align:center;margin:12px 0}
+.key-badge{display:inline-block;background:#e8e8e8;padding:3px 16px;border-radius:6px;font-weight:bold;font-size:26px;margin:0 5px;border:1px solid #ccc}
+.btn{padding:12px 36px;margin-top:20px;font-size:20px;font-family:inherit;background:#4682B4;color:#fff;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .btn:hover{background:#356a9a}
-.btn:active{transform:scale(.98)}
-#error-box{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;flex-direction:column;justify-content:center;align-items:center;font-family:"Microsoft YaHei",sans-serif;padding:40px;text-align:center}
+#error-box{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;flex-direction:column;justify-content:center;align-items:center;padding:40px;text-align:center}
 #error-box h2{color:#c0392b;margin-bottom:20px}
 #error-box p{font-size:18px;color:#555;margin-bottom:10px}
-#error-box pre{font-size:13px;color:#888;max-width:90%;overflow:auto;background:#f5f5f5;padding:15px;border-radius:6px;text-align:left;white-space:pre-wrap;word-break:break-all;max-height:300px;margin:10px 0}
+#error-box pre{font-size:13px;color:#888;max-width:90%;max-height:300px;overflow:auto;background:#f5f5f5;padding:15px;border-radius:6px;text-align:left;white-space:pre-wrap}
 #error-box button{margin-top:20px;padding:10px 30px;font-size:16px;cursor:pointer}
-@media(max-width:768px){.inst-text{font-size:18px;padding:0 20px}.inst-title{font-size:26px}#word-display{font-size:56px}#fixation{font-size:48px}.key-badge{font-size:22px;padding:2px 12px}}
+/* 素材库表格 */
+.lib-table{border-collapse:collapse;margin:10px auto;font-size:15px;width:95%;max-width:900px}
+.lib-table th{background:#1a5276;color:#fff;padding:6px 8px;font-size:14px}
+.lib-table td{padding:4px 8px;border-bottom:1px solid #ddd;text-align:center;font-size:15px}
+.lib-table tr:nth-child(even){background:#f8f9fa}
+.lib-wrap{max-height:60vh;overflow-y:auto;width:100%;display:flex;justify-content:center}
+.sm-text{font-size:13px;color:#999;margin-top:5px}
+.col-dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:middle;margin-right:4px}
+@media(max-width:768px){.inst-text{font-size:16px;padding:0 10px}.inst-title{font-size:22px}#word-display{font-size:56px}#fixation{font-size:48px}.key-badge{font-size:20px;padding:2px 10px}.lib-table{font-size:13px}}
 </style>
 </head>
 <body>
-
-<div id="container">
-  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#666">
-    <p style="font-size:24px">⏳ 实验加载中...</p>
-    <p style="font-size:16px;margin-top:15px">请使用 <strong>Chrome</strong> 或 <strong>Edge</strong> 浏览器</p>
-  </div>
-</div>
-
-<div id="error-box">
-  <h2>⚠️ 程序出现错误</h2>
-  <p id="err-msg"></p>
-  <pre id="err-detail"></pre>
-  <p style="font-size:14px;color:#999">请截图此错误并联系主试，或按 F12 查看控制台</p>
-  <button onclick="location.reload()">重新加载</button>
-</div>
+<div id="container"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#666"><p style="font-size:24px">⏳ 实验加载中...</p></div></div>
+<div id="error-box"><h2>⚠️ 程序出现错误</h2><p id="err-msg"></p><pre id="err-detail"></pre><p style="font-size:14px;color:#999">截图此错误联系主试，或F12看控制台</p><button onclick="location.reload()">重新加载</button></div>
 
 <script>
-// ==================== 全局错误捕获 ====================
-window.onerror = function(msg, url, line, col, err) {
-  showErr(msg, err ? err.stack : '');
-  return true;
-};
-window.onunhandledrejection = function(e) {
-  showErr('Promise错误: ' + (e.reason ? e.reason.message || e.reason : ''), e.reason ? e.reason.stack : '');
-};
-function showErr(msg, detail) {
-  document.getElementById('container').innerHTML = '';
-  document.getElementById('err-msg').textContent = msg || '未知错误';
-  document.getElementById('err-detail').textContent = detail || '';
-  document.getElementById('error-box').style.display = 'flex';
+// ==================== 错误捕获 ====================
+window.onerror=function(m,u,l,c,e){showErr(m,(e||{}).stack||'');return true};
+function showErr(msg,detail){
+  var c=document.getElementById('container');if(c)c.innerHTML='';
+  document.getElementById('err-msg').textContent=msg||'未知错误';
+  document.getElementById('err-detail').textContent=detail||'';
+  document.getElementById('error-box').style.display='flex';
 }
 
 // ==================== 全屏 ====================
-function tryFS() { document.documentElement.requestFullscreen().catch(function(){}) }
-window.enterFS = function() { if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}) };
+function tryFS(){document.documentElement.requestFullscreen().catch(function(){})}
+window.enterFS=function(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(function(){})};
 
 // ==================== 实验配置 ====================
 var CFG = {
-  fixMs:500, blankMs:200, primeMs:300, targetMs:2000, itiMs:800, timeoutFeedMs:500,
+  fixMs:500, blankMs:200, targetMs:2000, itiMs:800,
   practiceDelay:1500, formalDelay:2000, midBreak:40,
-  fixText:'+', fixSize:64, wordSize:72, font:'"Microsoft YaHei","微软雅黑","PingFang SC",sans-serif',
-  primeColor:'#555555',
-  keyMap:{F:'red',J:'blue',K:'green'},
-  colors:{red:{name:'红色',css:'#FF0000',key:'F'},blue:{name:'蓝色',css:'#0000FF',key:'J'},green:{name:'绿色',css:'#00B000',key:'K'}},
-  posNet:['治愈','狂喜','爆甜','上头','封神','真香','爱了','绝了','给力','好燃','美滋滋','小确幸','神仙','宝藏','超赞','元气','极好','倍爽','暖心','点赞'],
-  negNet:['破防','焦虑','内耗','摆烂','无语','崩溃','裂开','窒息','躺平','自闭','社死','心塞','扎心','颓废','难顶','太烦','累了','网抑','蕉绿','绷不住'],
-  posOrd:['开心','幸福','愉悦','振奋','欣慰','快乐','欢喜','满足','自豪','感激','温暖','感动','平静','放松','舒适','美好','甜蜜','希望','从容','喜悦'],
-  negOrd:['难过','悲伤','愤怒','失落','压抑','痛苦','忧郁','沮丧','绝望','恐惧','烦躁','厌倦','孤独','空虚','迷茫','沉重','自卑','羞耻','憎恨','愁闷'],
+  fixText:'+', fixSize:56, wordSize:72,
+  colors:{red:{name:'红色',css:'#E60000',key:'F'},blue:{name:'蓝色',css:'#0044CC',key:'J'},green:{name:'绿色',css:'#00994D',key:'K'}},
+
+  // ========== 词汇素材库 ==========
+  // 所有词汇直接设为本色字（红/蓝/绿）
+  posNet:[
+    '氛围感拉满','元气满满','治愈','狂喜','爆甜',
+    '绝绝子','封神','爱了','好燃','上头',
+    '小确幸','美滋滋','快乐源泉','人间值得','宝藏',
+    '神仙','超赞','给力','点赞','暖暖的'
+  ],
+  negNet:[
+    '破防','emo','摆烂','焦虑','内耗',
+    '无语','崩溃','裂开','窒息','躺平',
+    '自闭','社死','心塞','扎心','太烦',
+    '累了','网抑云','绷不住','破大防','蕉绿'
+  ],
+  posOrd:[
+    '开心','幸福','愉悦','振奋','欣慰',
+    '快乐','欢喜','满足','自豪','感激',
+    '温暖','感动','平静','放松','舒适',
+    '美好','甜蜜','希望','从容','喜悦'
+  ],
+  negOrd:[
+    '难过','悲伤','愤怒','失落','压抑',
+    '痛苦','忧郁','沮丧','绝望','恐惧',
+    '烦躁','厌倦','孤独','空虚','迷茫',
+    '沉重','自卑','羞耻','憎恨','愁闷'
+  ],
   pracWds:['桌子','椅子','书本','窗户','电脑','水杯','街道','树木','汽车','电话','手表','台灯'],
-  getCat:function(){return[{label:'积极网络流行情绪词',words:this.posNet},{label:'消极网络流行情绪词',words:this.negNet},{label:'积极普通情绪词',words:this.posOrd},{label:'消极普通情绪词',words:this.negOrd}]},
+
+  getCat:function(){return[
+    {label:'积极网络流行情绪词',words:this.posNet,key:'posNet'},
+    {label:'消极网络流行情绪词',words:this.negNet,key:'negNet'},
+    {label:'积极普通情绪词',words:this.posOrd,key:'posOrd'},
+    {label:'消极普通情绪词',words:this.negOrd,key:'negOrd'}
+  ]},
   getColors:function(){var a=[];for(var k in this.colors)a.push(k);return a}
 };
 
-// ==================== 实验核心 ====================
-var STAGE={PREP:'prep',PRAC:'prac',FORM:'form',DONE:'done'};
-var PHASE={FIX:'fix',BLANK:'blk',PRIME:'pri',TARGET:'tgt',ITI:'iti'};
+// ==================== 核心实验 ====================
+function Experiment(){
+  var self=this;
+  self.container=document.getElementById('container');
+  self.stage='prep';self.phase=null;self.idx=0;self.total=0;
+  self.list=[];self.stim=null;self.result=null;
+  self.responded=false;self.t0=0;
+  self.results=[];self.pracResults=[];
+  self._timer=null;
+  self.pid='';
 
-function Experiment() {
-  var self = this;
-  self.container = document.getElementById('container');
-  self.stage = STAGE.PREP;
-  self.phase = null;
-  self.idx = 0;
-  self.total = 0;
-  self.list = [];
-  self.stim = null;
-  self.result = null;
-  self.responded = false;
-  self.t0 = 0;
-  self.results = [];
-  self.pracResults = [];
-  self._pid = function(){
+  // 被试编号
+  (function(){
     var p=new URLSearchParams(window.location.search).get('pid');
-    if(p) return p;
+    if(p){self.pid=p;return}
     var s=localStorage.getItem('stroop_pid');
-    if(s) return s;
-    var d='P'+String(Date.now()).slice(-6);
-    localStorage.setItem('stroop_pid',d);
-    return d;
-  };
-  self.pid = self._pid();
-  self._timer = null;
+    if(s){self.pid=s;return}
+    self.pid='P'+String(Date.now()).slice(-6);
+    localStorage.setItem('stroop_pid',self.pid);
+  })();
 
-  // ===== 构建DOM =====
-  self._buildDOM = function() {
-    self.container.innerHTML = '';
-    // 刺激显示区（独立于content-area，不会被指导语覆盖）
-    var disp = document.createElement('div'); disp.id = 'stimulus-display';
-    disp.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;background:#fff';
-
-    var fix = document.createElement('div'); fix.id = 'fixation'; fix.className = 'stimulus-text';
-    fix.style.display = 'none'; fix.textContent = CFG.fixText; fix.style.fontSize = CFG.fixSize + 'px';
+  // ===== DOM =====
+  self._buildDOM = function(){
+    self.container.innerHTML='';
+    var disp=document.createElement('div');disp.id='stimulus-display';
+    disp.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;background:#fff';
+    var fix=document.createElement('div');fix.id='fixation';fix.className='stimulus-text';
+    fix.style.display='none';fix.textContent=CFG.fixText;fix.style.fontSize=CFG.fixSize+'px';
     disp.appendChild(fix);
-
-    var wd = document.createElement('div'); wd.id = 'word-display'; wd.className = 'stimulus-text';
-    wd.style.display = 'none'; wd.style.fontSize = CFG.wordSize + 'px';
+    var wd=document.createElement('div');wd.id='word-display';wd.className='stimulus-text';
+    wd.style.display='none';wd.style.fontSize=CFG.wordSize+'px';
     disp.appendChild(wd);
-
-    var prog = document.createElement('div'); prog.id = 'progress-indicator'; prog.style.display = 'none';
-    disp.appendChild(prog);
-
-    var to = document.createElement('div'); to.id = 'timeout-indicator'; to.style.display = 'none';
-    to.textContent = '未检测到按键';
-    disp.appendChild(to);
-
+    var pg=document.createElement('div');pg.id='prog';pg.style.display='none';
+    disp.appendChild(pg);
+    var to=document.createElement('div');to.id='timeout-tip';to.style.display='none';
+    to.textContent='未检测到按键';disp.appendChild(to);
     self.container.appendChild(disp);
-
-    // 指导语区域
-    var ca = document.createElement('div'); ca.id = 'content-area';
-    ca.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff';
-    self.container.appendChild(ca);
   };
-
-  // ===== 显示控制 =====
-  function hideAll() {
-    var e1=byId('fixation');if(e1)e1.style.display='none';
-    var e2=byId('word-display');if(e2)e2.style.display='none';
-    var e3=byId('progress-indicator');if(e3)e3.style.display='none';
-    var e4=byId('timeout-indicator');if(e4)e4.style.display='none';
-  }
   function byId(id){return document.getElementById(id)}
+  function hideStim(){
+    var e=byId('fixation');if(e)e.style.display='none';
+    e=byId('word-display');if(e)e.style.display='none';
+    e=byId('prog');if(e)e.style.display='none';
+    e=byId('timeout-tip');if(e)e.style.display='none';
+  }
+  function showStim(){byId('stimulus-display').style.display='flex'}
+  function stimOff(){byId('stimulus-display').style.display='none'}
 
-  self._showFix = function(){ showStim(); hideAll(); byId('fixation').style.display = 'block'; };
-  self._showWord = function(w, c){ showStim(); hideAll(); var e=byId('word-display'); e.textContent=w; e.style.color=c; e.style.display='block'; };
-  self._showBlank = function(){ showStim(); hideAll(); };
-  self._showTimeout = function(){ showStim(); hideAll(); byId('timeout-indicator').style.display='block'; };
-  self._prog = function(cur,tot){ var e=byId('progress-indicator'); e.textContent=cur+'/'+tot; e.style.display='block'; };
-  function showStim(){ var d=byId('stimulus-display');if(d)d.style.display='flex';var c=byId('content-area');if(c)c.style.display='none'; }
+  // ===== 计时 =====
+  function st(d,cb){ct();self._timer=setTimeout(function(){ct();cb()},d)}
+  function ct(){if(self._timer!==null){clearTimeout(self._timer);self._timer=null}}
 
-  // ===== 计时器 =====
-  function st(d,cb){ ct(); self._timer=setTimeout(function(){ct();cb()},d); }
-  function ct(){ if(self._timer!==null){clearTimeout(self._timer);self._timer=null} }
-
-  // ===== 实验流程 =====
-  self.start = function() {
-    console.log('[实验] 开始');
-    showInst(
-      '欢迎参加认知判断实验',
-      '<p>您好！本次实验为简单的<strong>认知判断实验</strong>，全程无对错批判。</p>' +
-      '<p>屏幕中将<strong>随机</strong>出现不同的情绪词汇，你的任务<strong>忽略词汇本身的含义</strong>，仅<strong>快速、准确</strong>判断词汇的<strong>字体颜色</strong>。</p>' +
-      '<div class="key-hint">' +
-      '<span class="key-badge">F</span> → <span class="color-red">■ 红色</span> &nbsp;&nbsp;&nbsp;' +
-      '<span class="key-badge">J</span> → <span class="color-blue">■ 蓝色</span> &nbsp;&nbsp;&nbsp;' +
-      '<span class="key-badge">K</span> → <span class="color-green">■ 绿色</span></div>' +
-      '<p>请全程专注，尽可能<strong>快速</strong>且<strong>准确</strong>作答。</p>',
-      '准备好后，点击开始练习',
-      function(){ self._goPractice(); }
-    );
-  };
-
-  self._goPractice = function() {
-    console.log('[实验] 练习开始');
-    self.stage = STAGE.PRAC;
-    self.list = SM.getPrac();
-    self.total = self.list.length;
-    self.idx = 0;
-    self.results = [];
-    self.pracResults = [];
-    st(CFG.practiceDelay, function(){ self._next(); });
-  };
-
-  self._goFormal = function() {
-    console.log('[实验] 正式实验开始');
-    self.stage = STAGE.FORM;
-    self.list = SM.getFormal();
-    self.total = self.list.length;
-    self.idx = 0;
-    st(CFG.formalDelay, function(){ self._next(); });
-  };
-
-  self._next = function() {
-    if(self.idx >= self.total) { self._stageDone(); return; }
-    self.stim = self.list[self.idx];
-    self.responded = false;
-    var s = self.stim;
-    self.result = {
-      n:self.idx+1, phase:self.stage===STAGE.PRAC?'练习':'正式实验',
-      word:s.word, cat:s.cat, chars:s.word.length,
-      col:s.col, colName:CFG.colors[s.col].name, key:CFG.colors[s.col].key,
-      resp:'', correct:false, timeout:false, rt:-1, ts:Date.now()
+  // ===== 试次阶段 =====
+  self._next=function(){
+    if(self.idx>=self.total){self._stageDone();return}
+    self.stim=self.list[self.idx];self.responded=false;
+    var s=self.stim;
+    self.result={
+      n:self.idx+1,phase:self.stage==='prac'?'练习':'正式实验',
+      word:s.word,cat:s.cat,chars:s.word.length,
+      col:s.col,colName:CFG.colors[s.col].name,key:CFG.colors[s.col].key,
+      resp:'',correct:false,timeout:false,rt:-1,ts:Date.now()
     };
-    self._doFix();
+    self._doTrial();
   };
 
-  self._doFix = function(){ self.phase=PHASE.FIX; self._showFix(); st(CFG.fixMs,function(){self._doBlank()}); };
-  self._doBlank = function(){ self.phase=PHASE.BLANK; self._showBlank(); st(CFG.blankMs,function(){self._doPrime()}); };
-
-  self._doPrime = function(){
-    self.phase=PHASE.PRIME; self._showWord(self.stim.word,CFG.primeColor);
-    if(self.stage===STAGE.FORM) self._prog(self.idx+1,self.total);
-    st(CFG.primeMs,function(){self._doTarget()});
+  self._doTrial=function(){
+    self.phase='fix';showStim();hideStim();
+    byId('fixation').style.display='block';
+    st(CFG.fixMs,function(){
+      self.phase='blank';hideStim();
+      if(self.stage==='form'){var e=byId('prog');e.textContent=(self.idx+1)+'/'+self.total;e.style.display='block'}
+      st(CFG.blankMs,function(){
+        self.phase='target';
+        // === 词汇直接显示本色（红/蓝/绿），"是这个颜色的字" ===
+        var c=CFG.colors[self.stim.col].css;
+        var w=byId('word-display');w.textContent=self.stim.word;w.style.color=c;w.style.display='block';
+        self.t0=performance.now();
+        if(self.stage==='form'){var e=byId('prog');e.textContent=(self.idx+1)+'/'+self.total;e.style.display='block'}
+        st(CFG.targetMs,function(){if(!self.responded)self._timeout()});
+      })
+    })
   };
 
-  self._doTarget = function(){
-    self.phase=PHASE.TARGET;
-    self._showWord(self.stim.word,CFG.colors[self.stim.col].css);
-    self.t0 = performance.now();
-    if(self.stage===STAGE.FORM) self._prog(self.idx+1,self.total);
-    st(CFG.targetMs,function(){ if(!self.responded) self._timeout(); });
-  };
-
-  self._doITI = function(){
-    self.phase=PHASE.ITI; self._showBlank();
-    var isPrac = self.stage===STAGE.PRAC;
-    if(isPrac) self.pracResults.push(self.result); else self.results.push(self.result);
-    console.log((isPrac?'[练习]':'[正式]')+' '+self.result.n+': '+self.result.word+' '+
-      self.result.colName+' 按键='+self.result.resp+' RT='+self.result.rt+'ms '+
-      (self.result.timeout?'超时':(self.result.correct?'正确':'错误')));
-    if(!isPrac && self.results.length>0 && self.results.length%20===0) self._stats();
+  self._iti=function(){
+    hideStim();
+    var isP=self.stage==='prac';
+    if(isP)self.pracResults.push(self.result);else self.results.push(self.result);
+    console.log((isP?'[练习]':'[正式]')+' '+self.result.n+': '+self.result.word+' '+self.result.colName+
+      ' 按键='+self.result.resp+' RT='+self.result.rt+'ms '+(self.result.timeout?'超时':(self.result.correct?'正确':'错误')));
+    if(!isP&&self.results.length%20===0)self._stats();
     self.idx++;
     st(CFG.itiMs,function(){
-      if(self.stage===STAGE.FORM && self.idx===CFG.midBreak && self.idx<self.total)
-        self._break();
+      if(self.stage==='form'&&self.idx===CFG.midBreak&&self.idx<self.total)self._showBreak();
       else self._next();
-    });
+    })
   };
 
   // ===== 按键 =====
-  self._keydown = function(e) {
-    var k = e.key.toUpperCase();
-    if(k==='ESCAPE' && self.stage!==STAGE.DONE){ if(confirm('终止实验？已收集数据将保留。')) self._term(); return; }
-    if(self.phase!==PHASE.TARGET || self.responded) return;
-    if(k!=='F' && k!=='J' && k!=='K') return;
-    e.preventDefault(); self.responded=true; ct();
-    var rt = Math.round(performance.now() - self.t0);
-    self.result.resp=k; self.result.rt=rt;
-    self.result.correct=(k===CFG.colors[self.stim.col].key);
-    self.result.timeout=false;
-    self._doITI();
+  self._keydown=function(e){
+    var k=e.key.toUpperCase();
+    if(k==='ESCAPE'&&self.stage!=='done'){if(confirm('终止实验？已收集数据保留。'))self._term();return}
+    if(self.phase!=='target'||self.responded)return;
+    if(k!=='F'&&k!=='J'&&k!=='K')return;
+    e.preventDefault();self.responded=true;ct();
+    var rt=Math.round(performance.now()-self.t0);
+    self.result.resp=k;self.result.rt=rt;
+    self.result.correct=(k===CFG.colors[self.stim.col].key);self.result.timeout=false;
+    self._iti();
   };
   document.addEventListener('keydown',function(e){self._keydown(e)});
 
-  self._timeout = function(){
-    if(self.responded) return; self.responded=true;
-    self.result.resp='无响应'; self.result.rt=CFG.targetMs; self.result.correct=false; self.result.timeout=true;
-    self._showTimeout();
-    st(CFG.timeoutFeedMs,function(){self._doITI()});
+  self._timeout=function(){
+    if(self.responded)return;self.responded=true;
+    self.result.resp='无响应';self.result.rt=CFG.targetMs;self.result.correct=false;self.result.timeout=true;
+    byId('timeout-tip').style.display='block';
+    st(500,function(){self._iti()});
   };
 
-  // ===== 阶段完成 =====
-  self._stageDone = function(){
-    if(self.stage===STAGE.PRAC){
-      showInst('练习阶段结束',
-        '<p>练习已完成！接下来进入<strong>正式实验</strong>（80试次，约5-8分钟）。</p>' +
-        '<p>规则相同：</p>' +
-        '<div class="key-hint">' +
-        '<span class="key-badge">F</span> → <span class="color-red">■ 红色</span> &nbsp;&nbsp;&nbsp;' +
-        '<span class="key-badge">J</span> → <span class="color-blue">■ 蓝色</span> &nbsp;&nbsp;&nbsp;' +
-        '<span class="key-badge">K</span> → <span class="color-green">■ 绿色</span></div>' +
-        '<p>请保持专注，快速准确地作答。</p>',
-        '开始正式实验', function(){ self._goFormal(); }
-      );
-    } else if(self.stage===STAGE.FORM){
-      self._finish();
-    }
+  // ===== 阶段流转 =====
+  self._stageDone=function(){
+    if(self.stage==='prac'){
+      self._showInst('练习阶段结束','<p>练习完成！接下来进入<strong>正式实验</strong>（80试次）。</p><div class="key-hint"><span class="key-badge">F</span>→红 &nbsp; <span class="key-badge">J</span>→蓝 &nbsp; <span class="key-badge">K</span>→绿</div>','开始正式实验',function(){self._goFormal()});
+    }else if(self.stage==='form'){self._finish()}
   };
 
-  self._break = function(){
-    var left = self.total - self.idx;
-    showInst('休息一下',
-      '<p>已完成一半！可稍作休息。</p>' +
-      '<p>剩余 <strong>'+left+'</strong> 个试次</p>' +
-      '<div class="key-hint">' +
-      '<span class="key-badge">F</span> → 红 &nbsp; <span class="key-badge">J</span> → 蓝 &nbsp; <span class="key-badge">K</span> → 绿</div>',
-      '继续实验', function(){ self._next(); }
-    );
+  self._goPractice=function(){
+    self.stage='prac';self.list=SM.getPrac();self.total=self.list.length;self.idx=0;
+    self.results=[];self.pracResults=[];
+    st(CFG.practiceDelay,function(){self._next()});
   };
 
-  self._finish = function(){
-    self.stage=STAGE.DONE; ct(); self._fullStats();
-    showInst('实验已完成',
-      '<p>非常感谢您的参与！</p>' +
-      '<p style="font-size:18px;color:#666;margin-top:20px">实验数据已准备就绪，请点击下方按钮下载。</p>' +
-      '<p style="font-size:16px;color:#999">被试编号: '+self.pid+'</p>' +
-      '<div style="margin-top:20px"><button id="dl-btn" class="btn">📥 下载实验数据 (CSV)</button></div>' +
-      '<p style="font-size:14px;color:#aaa;margin-top:20px">请告知主试实验结束，谢谢！</p>',
-      '', null, false);
-    setTimeout(function(){
-      var b = document.getElementById('dl-btn');
-      if(b) b.onclick = function(){ self._dlCSV(); };
-    },100);
+  self._goFormal=function(){
+    self.stage='form';self.list=SM.getFormal();self.total=self.list.length;self.idx=0;
+    st(CFG.formalDelay,function(){self._next()});
   };
 
-  self._term = function(){
-    ct(); document.removeEventListener('keydown',self._keydown);
-    showInst('实验已终止', '<p style="color:#c0392b">已终止。已完成 '+self.results.length+' 个正式试次。</p>',
-      self.results.length>0?'下载已有数据':'', function(){ if(self.results.length>0) self._dlCSV(); }, false);
+  self._showBreak=function(){
+    self._showInst('休息一下','<p>已完成一半！剩余 <strong>'+(self.total-self.idx)+'</strong> 个试次。</p><div class="key-hint"><span class="key-badge">F</span>→红 <span class="key-badge">J</span>→蓝 <span class="key-badge">K</span>→绿</div>','继续实验',function(){self._next()});
+  };
+
+  self._finish=function(){
+    self.stage='done';ct();self._fullStats();
+    self._showInst('实验已完成','<p>非常感谢您的参与！</p><p style="font-size:18px;color:#666">数据已就绪，点击下方按钮下载。</p><p style="font-size:15px;color:#999">被试: '+self.pid+'｜正式: '+self.results.length+'试次</p><div style="margin-top:15px"><button id="dl-btn" class="btn">📥 下载实验数据 (CSV)</button></div>','',null,false);
+    setTimeout(function(){var b=byId('dl-btn');if(b)b.onclick=function(){self._dlCSV()}},100);
+  };
+
+  self._term=function(){
+    ct();
+    self._showInst('实验已终止','<p style="color:#c0392b">已终止。已完成 '+self.results.length+' 个正式试次。</p>',self.results.length>0?'下载已有数据':'',function(){if(self.results.length>0)self._dlCSV()},false);
   };
 
   // ===== 指导语 =====
-  function showInst(title, html, btnText, cb, showBtn) {
-    if(showBtn===undefined) showBtn=true;
-    ct(); self.phase=null;
-    // 隐藏刺激显示，显示content-area
-    var sd=byId('stimulus-display');if(sd)sd.style.display='none';
-    var ca=byId('content-area');if(ca)ca.style.display='flex';
-    if(!ca) return; ca.innerHTML='';
-    var p = document.createElement('div'); p.className='inst-panel';
-    var t = document.createElement('div'); t.className='inst-title'; t.textContent=title; p.appendChild(t);
-    var b = document.createElement('div'); b.className='inst-text'; b.innerHTML=html; p.appendChild(b);
-    if(showBtn && btnText){
-      var btn = document.createElement('button'); btn.className='btn'; btn.textContent=btnText;
-      btn.onclick = function(){ if(window.enterFS) window.enterFS(); if(cb) cb(); };
+  self._showInst = function(title,html,btnText,cb,showBtn){
+    if(showBtn===undefined)showBtn=true;
+    ct();self.phase=null;stimOff();
+    var ca=document.createElement('div');ca.id='content-area';
+    ca.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff';
+    self.container.appendChild(ca);
+    var p=document.createElement('div');p.className='inst-panel';
+    var t=document.createElement('div');t.className='inst-title';t.textContent=title;p.appendChild(t);
+    var b=document.createElement('div');b.className='inst-text';b.innerHTML=html;p.appendChild(b);
+    if(showBtn&&btnText){
+      var btn=document.createElement('button');btn.className='btn';btn.textContent=btnText;
+      btn.onclick=function(){if(window.enterFS)window.enterFS();if(cb)cb()};
       p.appendChild(btn);
     }
     ca.appendChild(p);
   }
 
   // ===== 数据 =====
-  self._dlCSV = function(){
-    var csv = self._genCSV();
-    var blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a'); a.href=url;
-    a.download = 'stroop_'+self.pid+'_'+ts()+'.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  self._dlCSV=function(){
+    var csv=self._genCSV();var BOM='﻿';
+    var blob=new Blob([BOM+csv],{type:'text/csv;charset=utf-8;'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;
+    a.download='stroop_'+self.pid+'_'+ts()+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   };
-
-  self._genCSV = function(){
-    var rows = ['试次编号,阶段,词汇,词汇类别,字数,呈现颜色,正确按键,被试按键,正误,反应时(ms),是否超时,时间戳'];
-    var all = [];
-    for(var i=0;i<self.pracResults.length;i++){ var r=self.pracResults[i]; all.push(r); }
-    for(var i=0;i<self.results.length;i++){ var r=self.results[i]; r.phase='正式实验'; all.push(r); }
+  self._genCSV=function(){
+    var rows=['试次编号,阶段,词汇,词汇类别,字数,呈现颜色,正确按键,被试按键,正误,反应时(ms),是否超时,时间戳'];
+    var all=[];
+    for(var i=0;i<self.pracResults.length;i++){var r=self.pracResults[i];all.push(r)}
+    for(var i=0;i<self.results.length;i++){var r=self.results[i];r.phase='正式实验';all.push(r)}
     for(var i=0;i<all.length;i++){
       var d=all[i];
-      rows.push([d.n,d.phase,d.word,d.cat,d.chars,d.colName,d.key,
-        d.resp,d.timeout?'超时':(d.correct?'正确':'错误'),d.rt,d.timeout?1:0,d.ts].join(','));
+      rows.push([d.n,d.phase,d.word,d.cat,d.chars,d.colName,d.key,d.resp,
+        d.timeout?'超时':(d.correct?'正确':'错误'),d.rt,d.timeout?1:0,d.ts].join(','));
     }
     return rows.join('\n');
   };
-
-  self._stats = function(){
-    var c=0; for(var i=0;i<self.results.length;i++) if(self.results[i].correct) c++;
-    var rts=[]; for(var i=0;i<self.results.length;i++) if(!self.results[i].timeout) rts.push(self.results[i].rt);
-    var s=0; for(var i=0;i<rts.length;i++) s+=rts[i];
+  self._stats=function(){
+    var c=0;for(var i=0;i<self.results.length;i++)if(self.results[i].correct)c++;
+    var rts=[];for(var i=0;i<self.results.length;i++)if(!self.results[i].timeout)rts.push(self.results[i].rt);
+    var s=0;for(var i=0;i<rts.length;i++)s+=rts[i];
     console.log('[统计] '+self.results.length+'/'+self.total+' 正确率'+(c/self.results.length*100).toFixed(1)+'% 平均RT'+(rts.length>0?(s/rts.length).toFixed(0):'N/A')+'ms');
   };
-
-  self._fullStats = function(){
-    console.log('\n===== 实验摘要 =====');
-    console.log('被试:'+self.pid+' 练习:'+self.pracResults.length+' 正式:'+self.results.length);
+  self._fullStats=function(){
+    console.log('\n===== 实验摘要 =====\n被试:'+self.pid+' 练习:'+self.pracResults.length+' 正式:'+self.results.length);
     if(self.results.length>0){
-      var c=0,t=0; for(var i=0;i<self.results.length;i++){if(self.results[i].correct)c++;if(self.results[i].timeout)t++;}
-      var e=self.results.length-c-t;
-      var rts=[]; for(var i=0;i<self.results.length;i++) if(!self.results[i].timeout) rts.push(self.results[i].rt);
-      var s=0; for(var i=0;i<rts.length;i++) s+=rts[i];
-      console.log('正确:'+c+' 错误:'+e+' 超时:'+t+' 正确率:'+(c/self.results.length*100).toFixed(1)+'% 平均RT:'+(rts.length>0?(s/rts.length).toFixed(0):'N/A')+'ms');
+      var c=0,t=0;for(var i=0;i<self.results.length;i++){if(self.results[i].correct)c++;if(self.results[i].timeout)t++;}
+      var rts=[];for(var i=0;i<self.results.length;i++)if(!self.results[i].timeout)rts.push(self.results[i].rt);
+      var s=0;for(var i=0;i<rts.length;i++)s+=rts[i];
+      console.log('正确:'+c+' 错误:'+(self.results.length-c-t)+' 超时:'+t+' 正确率:'+(c/self.results.length*100).toFixed(1)+'% 平均RT:'+(rts.length>0?(s/rts.length).toFixed(0):'N/A')+'ms');
     }
-    console.log('==================');
   };
 }
 
-function ts(){var d=new Date(); return ''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+String(d.getSeconds()).padStart(2,'0');}
+function ts(){var d=new Date();return ''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+String(d.getSeconds()).padStart(2,'0')}
 
 // ==================== 刺激管理器 ====================
-var SM = {
-  formal:[], prac:[],
-  _seed: 0,
-  _rand: function(){ return Math.random(); },
-  _shuffle: function(arr){
+var SM={
+  formal:[],prac:[],
+  _shuffle:function(arr){
     var a=arr.slice();
-    for(var i=a.length-1;i>0;i--){var j=Math.floor(this._rand()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}
     return a;
   },
-  _assignColorsToGroup: function(arr){
-    // 对一组词汇分配均衡颜色（20词→红7蓝7绿6 或 12词→红4蓝4绿4）
-    var cols = CFG.getColors(); // ['red','blue','green']
+  _assignToGroup:function(arr){
+    // 组内均衡分配颜色（如20词→红7蓝7绿6）
+    var cols=CFG.getColors();
     var pool=[];
-    var base=Math.floor(arr.length/cols.length), rem=arr.length%cols.length;
-    for(var i=0;i<cols.length;i++){var cnt=base+(i<rem?1:0);for(var j=0;j<cnt;j++)pool.push(cols[i]);}
+    var base=Math.floor(arr.length/cols.length),rem=arr.length%cols.length;
+    for(var i=0;i<cols.length;i++){var cnt=base+(i<rem?1:0);for(var j=0;j<cnt;j++)pool.push(cols[i])}
     var shuf=this._shuffle(pool);
-    for(var i=0;i<arr.length;i++) arr[i].col=shuf[i];
+    for(var i=0;i<arr.length;i++)arr[i].col=shuf[i];
   },
-  initialize: function(){
-    console.log('[SM] 初始化');
-    this.formal=[]; this.prac=[];
-
-    // 按类别生成词汇，每类单独分配颜色（组内均衡）
+  initialize:function(){
+    console.log('[SM] 初始化素材库...');
+    this.formal=[];this.prac=[];
     var cats=CFG.getCat();
     for(var c=0;c<cats.length;c++){
       var group=[];
       for(var w=0;w<cats[c].words.length;w++)
         group.push({word:cats[c].words[w],cat:cats[c].label,chars:cats[c].words[w].length,col:null});
-      this._assignColorsToGroup(group);
-      // 将本组加入正式列表
-      for(var i=0;i<group.length;i++) this.formal.push(group[i]);
+      this._assignToGroup(group);
+      for(var i=0;i<group.length;i++)this.formal.push(group[i]);
     }
-
     for(var i=0;i<CFG.pracWds.length;i++)
       this.prac.push({word:CFG.pracWds[i],cat:'练习(中性词)',chars:CFG.pracWds[i].length,col:null});
-    this._assignColorsToGroup(this.prac);
-
-    // 打乱整体顺序
-    this.formal = this._shuffle(this.formal);
-    this.prac = this._shuffle(this.prac);
+    this._assignToGroup(this.prac);
+    this.formal=this._shuffle(this.formal);
+    this.prac=this._shuffle(this.prac);
     console.log('[SM] 正式:'+this.formal.length+' 练习:'+this.prac.length);
     // 验证
-    var map={}; for(var i=0;i<this.formal.length;i++){var s=this.formal[i]; if(!map[s.cat])map[s.cat]={red:0,blue:0,green:0}; map[s.cat][s.col]++;}
-    for(var k in map) console.log('  '+k+': 红='+map[k].red+' 蓝='+map[k].blue+' 绿='+map[k].green);
+    var map={};for(var i=0;i<this.formal.length;i++){var s=this.formal[i];if(!map[s.cat])map[s.cat]={red:0,blue:0,green:0,t:0};map[s.cat][s.col]++;map[s.cat].t++}
+    for(var k in map)console.log('  '+k+': 红='+map[k].red+' 蓝='+map[k].blue+' 绿='+map[k].green+' (共'+map[k].t+')');
   },
-  getFormal: function(){ return this.formal.slice(); },
-  getPrac: function(){ return this.prac.slice(); }
+  getFormal:function(){return this.formal.slice()},
+  getPrac:function(){return this.prac.slice()}
 };
 
 // ==================== 启动 ====================
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    console.log('[启动] 开始...');
+document.addEventListener('DOMContentLoaded',function(){
+  try{
+    console.log('[启动] 初始化...');
     SM.initialize();
-    var exp = new Experiment();
-    exp._buildDOM();
-    setTimeout(function(){ tryFS(); exp.start(); }, 300);
-  } catch(e) {
-    console.error('[启动] 失败:', e);
-    showErr(e.message || '初始化失败', e.stack || '');
-  }
+    buildLibPage();
+  }catch(e){console.error(e);showErr(e.message,e.stack)}
 });
+
+// ==================== 素材库页面 ====================
+function buildLibPage(){
+  var c=document.getElementById('container');c.innerHTML='';
+
+  var panel=document.createElement('div');panel.className='inst-panel';
+
+  var title=document.createElement('div');title.className='inst-title';
+  title.textContent='📚 实验材料库 — 词汇与颜色分配清单';panel.appendChild(title);
+
+  var sub=document.createElement('p');sub.style.cssText='font-size:16px;color:#666;margin-bottom:10px';
+  sub.innerHTML='以下为全部 <strong>80</strong> 个正式实验词汇及其分配颜色。每种颜色在每类词汇中出现次数均衡（红≈蓝≈绿）。';
+  panel.appendChild(sub);
+
+  // 按类别显示表格
+  var wrap=document.createElement('div');wrap.className='lib-wrap';
+  var table=document.createElement('table');table.className='lib-table';
+  table.innerHTML='<tr><th>类别</th><th>词汇</th><th>字数</th><th>颜色</th><th>按键</th></tr>';
+
+  var cats=CFG.getCat();
+  var allItems=[];
+
+  // 先收集各类别词汇及其分配的颜色
+  for(var c=0;c<cats.length;c++){
+    var group=[];
+    for(var w=0;w<cats[c].words.length;w++){
+      var word=cats[c].words[w];
+      // 找SM中分配的颜色
+      var col='';
+      for(var i=0;i<SM.formal.length;i++){
+        if(SM.formal[i].word===word&&SM.formal[i].cat===cats[c].label){
+          col=SM.formal[i].col;break;
+        }
+      }
+      group.push({word:word,chars:word.length,col:col,cat:cats[c].label});
+    }
+    // 按颜色排序显示（便于观察均衡性）
+    group.sort(function(a,b){return a.col<b.col?-1:a.col>b.col?1:0});
+    for(var i=0;i<group.length;i++){
+      var g=group[i];
+      var dot='<span class="col-dot" style="background:'+CFG.colors[g.col].css+'"></span>';
+      table.innerHTML+='<tr><td>'+g.cat+'</td><td style="font-weight:bold;color:'+CFG.colors[g.col].css+'">'+g.word+'</td><td>'+g.chars+'</td><td>'+dot+CFG.colors[g.col].name+'</td><td>'+CFG.colors[g.col].key+'</td></tr>';
+    }
+  }
+
+  wrap.appendChild(table);panel.appendChild(wrap);
+
+  // 统计摘要行
+  var stats=document.createElement('p');stats.className='sm-text';
+  var map={};for(var i=0;i<SM.formal.length;i++){var s=SM.formal[i];if(!map[s.cat])map[s.cat]={red:0,blue:0,green:0};map[s.cat][s.col]++}
+  var st='颜色分配：';
+  for(var k in map)st+=k+'→红'+map[k].red+'蓝'+map[k].blue+'绿'+map[k].green+' | ';
+  stats.textContent=st;panel.appendChild(stats);
+
+  var btn=document.createElement('button');btn.className='btn';btn.textContent='✅ 确认无误，开始实验';
+  btn.onclick=function(){if(window.enterFS)window.enterFS();startExp()};
+  panel.appendChild(btn);
+
+  var tip=document.createElement('p');tip.className='sm-text';tip.style.marginTop='8px';
+  tip.textContent='点击后进入指导语 → 练习(12试次) → 正式实验(80试次)';
+  panel.appendChild(tip);
+
+  c.appendChild(panel);
+}
+
+// ==================== 启动实验 ====================
+function startExp(){
+  var exp=new Experiment();
+  exp._buildDOM();
+
+  // 先显示指导语
+  exp._showInst('欢迎参加实验',
+    '<p>屏幕中将随机出现不同的<strong>情绪词汇</strong>，每个词直接以<strong>红、蓝、绿</strong>三种颜色之一呈现。</p>'+
+    '<p>你的任务：<strong>忽略词汇含义</strong>，仅判断<strong>字体颜色</strong>：</p>'+
+    '<div class="key-hint"><span class="key-badge">F</span> → <span style="color:#E60000;font-weight:bold">■ 红色</span> &nbsp;&nbsp;'+
+    '<span class="key-badge">J</span> → <span style="color:#0044CC;font-weight:bold">■ 蓝色</span> &nbsp;&nbsp;'+
+    '<span class="key-badge">K</span> → <span style="color:#00994D;font-weight:bold">■ 绿色</span></div>'+
+    '<p>请<strong>快速且准确</strong>地作答，准备就绪后开始练习。</p>',
+    '开始练习',function(){exp._goPractice()});
+}
 </script>
 </body>
 </html>
