@@ -212,7 +212,7 @@ function Experiment(){
     if(isP){
       var fb=byId('feedback');
       if(fb){
-        if(self.result.timeout){fb.textContent='⏰ 超时！应在2000ms内按键';fb.style.color='#999'}
+        if(self.result.timeout){fb.textContent='超时！应在2000ms内按键';fb.style.color='#999'}
         else if(self.result.correct){fb.textContent='✓ 正确！';fb.style.color='#00994D'}
         else{fb.textContent='✗ 错误！正确按键是 '+self.result.key;fb.style.color='#CC0000'}
         fb.style.display='block';
