@@ -135,6 +135,17 @@ function Experiment(){
     disp.appendChild(pg);
     var to=document.createElement('div');to.id='timeout-tip';to.style.display='none';
     to.textContent='未检测到按键';disp.appendChild(to);
+    // 按键提示条（始终显示在底部）
+    var hint=document.createElement('div');hint.id='key-hint-bar';
+    hint.style.cssText='position:absolute;bottom:20px;left:0;width:100%;text-align:center;font-size:20px;color:#888;font-family:"Microsoft YaHei",sans-serif;pointer-events:none';
+    hint.innerHTML='<span class="key-badge" style="font-size:18px;padding:2px 10px;background:#f0f0f0">F</span> → <span style="color:#E60000;font-weight:bold">红</span> &nbsp;&nbsp;&nbsp;'+
+      '<span class="key-badge" style="font-size:18px;padding:2px 10px;background:#f0f0f0">J</span> → <span style="color:#0044CC;font-weight:bold">蓝</span> &nbsp;&nbsp;&nbsp;'+
+      '<span class="key-badge" style="font-size:18px;padding:2px 10px;background:#f0f0f0">K</span> → <span style="color:#00994D;font-weight:bold">绿</span>';
+    disp.appendChild(hint);
+    // 练习反馈
+    var fb=document.createElement('div');fb.id='feedback';fb.style.display='none';
+    fb.style.cssText='position:absolute;bottom:80px;left:0;width:100%;text-align:center;font-size:28px;font-weight:bold;pointer-events:none';
+    disp.appendChild(fb);
     self.container.appendChild(disp);
   };
   function byId(id){return document.getElementById(id)}
@@ -143,6 +154,7 @@ function Experiment(){
     e=byId('word-display');if(e)e.style.display='none';
     e=byId('prog');if(e)e.style.display='none';
     e=byId('timeout-tip');if(e)e.style.display='none';
+    e=byId('feedback');if(e)e.style.display='none';
   }
   function showStim(){
   byId('stimulus-display').style.display='flex';
@@ -196,10 +208,28 @@ function Experiment(){
       ' 按键='+self.result.resp+' RT='+self.result.rt+'ms '+(self.result.timeout?'超时':(self.result.correct?'正确':'错误')));
     if(!isP&&self.results.length%20===0)self._stats();
     self.idx++;
-    st(CFG.itiMs,function(){
-      if(self.stage==='form'&&self.idx===CFG.midBreak&&self.idx<self.total)self._showBreak();
-      else self._next();
-    })
+    // 练习阶段：先显示正误反馈，再进入下一试次
+    if(isP){
+      var fb=byId('feedback');
+      if(fb){
+        if(self.result.timeout){fb.textContent='⏰ 超时！应在2000ms内按键';fb.style.color='#999'}
+        else if(self.result.correct){fb.textContent='✓ 正确！';fb.style.color='#00994D'}
+        else{fb.textContent='✗ 错误！正确按键是 '+self.result.key;fb.style.color='#CC0000'}
+        fb.style.display='block';
+      }
+      st(600,function(){
+        if(fb)fb.style.display='none';
+        st(CFG.itiMs-600,function(){
+          if(self.stage==='form'&&self.idx===CFG.midBreak&&self.idx<self.total)self._showBreak();
+          else self._next();
+        })
+      });
+    }else{
+      st(CFG.itiMs,function(){
+        if(self.stage==='form'&&self.idx===CFG.midBreak&&self.idx<self.total)self._showBreak();
+        else self._next();
+      })
+    }
   };
 
   // ===== 按键 =====
