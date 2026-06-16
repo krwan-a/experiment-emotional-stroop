@@ -121,8 +121,9 @@ function Experiment() {
   // ===== 构建DOM =====
   self._buildDOM = function() {
     self.container.innerHTML = '';
-    var ca = document.createElement('div'); ca.id = 'content-area'; self.container.appendChild(ca);
+    // 刺激显示区（独立于content-area，不会被指导语覆盖）
     var disp = document.createElement('div'); disp.id = 'stimulus-display';
+    disp.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;background:#fff';
 
     var fix = document.createElement('div'); fix.id = 'fixation'; fix.className = 'stimulus-text';
     fix.style.display = 'none'; fix.textContent = CFG.fixText; fix.style.fontSize = CFG.fixSize + 'px';
@@ -139,23 +140,29 @@ function Experiment() {
     to.textContent = '未检测到按键';
     disp.appendChild(to);
 
-    ca.appendChild(disp);
+    self.container.appendChild(disp);
+
+    // 指导语区域
+    var ca = document.createElement('div'); ca.id = 'content-area';
+    ca.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:#fff';
+    self.container.appendChild(ca);
   };
 
   // ===== 显示控制 =====
   function hideAll() {
-    byId('fixation').style.display = 'none';
-    byId('word-display').style.display = 'none';
-    byId('progress-indicator').style.display = 'none';
-    byId('timeout-indicator').style.display = 'none';
+    var e1=byId('fixation');if(e1)e1.style.display='none';
+    var e2=byId('word-display');if(e2)e2.style.display='none';
+    var e3=byId('progress-indicator');if(e3)e3.style.display='none';
+    var e4=byId('timeout-indicator');if(e4)e4.style.display='none';
   }
   function byId(id){return document.getElementById(id)}
 
-  self._showFix = function(){ hideAll(); byId('fixation').style.display = 'block'; };
-  self._showWord = function(w, c){ hideAll(); var e=byId('word-display'); e.textContent=w; e.style.color=c; e.style.display='block'; };
-  self._showBlank = function(){ hideAll(); };
-  self._showTimeout = function(){ hideAll(); byId('timeout-indicator').style.display='block'; };
+  self._showFix = function(){ showStim(); hideAll(); byId('fixation').style.display = 'block'; };
+  self._showWord = function(w, c){ showStim(); hideAll(); var e=byId('word-display'); e.textContent=w; e.style.color=c; e.style.display='block'; };
+  self._showBlank = function(){ showStim(); hideAll(); };
+  self._showTimeout = function(){ showStim(); hideAll(); byId('timeout-indicator').style.display='block'; };
   self._prog = function(cur,tot){ var e=byId('progress-indicator'); e.textContent=cur+'/'+tot; e.style.display='block'; };
+  function showStim(){ var d=byId('stimulus-display');if(d)d.style.display='flex';var c=byId('content-area');if(c)c.style.display='none'; }
 
   // ===== 计时器 =====
   function st(d,cb){ ct(); self._timer=setTimeout(function(){ct();cb()},d); }
@@ -321,7 +328,10 @@ function Experiment() {
   function showInst(title, html, btnText, cb, showBtn) {
     if(showBtn===undefined) showBtn=true;
     ct(); self.phase=null;
-    var ca = byId('content-area'); if(!ca) return; ca.innerHTML='';
+    // 隐藏刺激显示，显示content-area
+    var sd=byId('stimulus-display');if(sd)sd.style.display='none';
+    var ca=byId('content-area');if(ca)ca.style.display='flex';
+    if(!ca) return; ca.innerHTML='';
     var p = document.createElement('div'); p.className='inst-panel';
     var t = document.createElement('div'); t.className='inst-title'; t.textContent=title; p.appendChild(t);
     var b = document.createElement('div'); b.className='inst-text'; b.innerHTML=html; p.appendChild(b);
