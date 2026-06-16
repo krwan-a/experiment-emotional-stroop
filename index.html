@@ -106,6 +106,15 @@ function Experiment() {
   self.t0 = 0;
   self.results = [];
   self.pracResults = [];
+  self._pid = function(){
+    var p=new URLSearchParams(window.location.search).get('pid');
+    if(p) return p;
+    var s=localStorage.getItem('stroop_pid');
+    if(s) return s;
+    var d='P'+String(Date.now()).slice(-6);
+    localStorage.setItem('stroop_pid',d);
+    return d;
+  };
   self.pid = self._pid();
   self._timer = null;
 
@@ -346,16 +355,6 @@ function Experiment() {
         d.resp,d.timeout?'超时':(d.correct?'正确':'错误'),d.rt,d.timeout?1:0,d.ts].join(','));
     }
     return rows.join('\n');
-  };
-
-  self._pid = function(){
-    var p=new URLSearchParams(window.location.search).get('pid');
-    if(p) return p;
-    var s=localStorage.getItem('stroop_pid');
-    if(s) return s;
-    var d='P'+String(Date.now()).slice(-6);
-    localStorage.setItem('stroop_pid',d);
-    return d;
   };
 
   self._stats = function(){
