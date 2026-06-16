@@ -382,18 +382,18 @@ function buildLibPage(){
   var allItems=[];
 
   // 先收集各类别词汇及其分配的颜色
-  for(var c=0;c<cats.length;c++){
+  for(var ci=0;ci<cats.length;ci++){
     var group=[];
-    for(var w=0;w<cats[c].words.length;w++){
-      var word=cats[c].words[w];
+    for(var w=0;w<cats[ci].words.length;w++){
+      var word=cats[ci].words[w];
       // 找SM中分配的颜色
       var col='';
       for(var i=0;i<SM.formal.length;i++){
-        if(SM.formal[i].word===word&&SM.formal[i].cat===cats[c].label){
+        if(SM.formal[i].word===word&&SM.formal[i].cat===cats[ci].label){
           col=SM.formal[i].col;break;
         }
       }
-      group.push({word:word,chars:word.length,col:col,cat:cats[c].label});
+      group.push({word:word,chars:word.length,col:col,cat:cats[ci].label});
     }
     // 按颜色排序显示（便于观察均衡性）
     group.sort(function(a,b){return a.col<b.col?-1:a.col>b.col?1:0});
